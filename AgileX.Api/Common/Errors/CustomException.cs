@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace AgileX.Api.Middleware;
+namespace AgileX.Api.Common.Errors;
 
 public class CustomException : Exception
 {

@@ -27,6 +27,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
         CancellationToken cancellationToken
     )
     {
+        await Task.CompletedTask;
         var existingUser = _userRepository.GetUserByEmail(request.Email);
         if (existingUser != null)
             return Result<SuccessMessage>.From(Errors.User.UserAlreadyExist);

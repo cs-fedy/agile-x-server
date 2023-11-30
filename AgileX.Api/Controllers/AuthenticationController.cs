@@ -4,6 +4,7 @@ using AgileX.Application.Common.Result;
 using AgileX.Contracts.Authentication.Login;
 using AgileX.Contracts.Authentication.Register;
 using AgileX.Domain.Common.Result;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,23 +15,22 @@ namespace AgileX.Api.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly ISender _mediator;
+    private readonly IMapper _mapper;
 
-    public AuthenticationController(IMediator mediator) => _mediator = mediator;
+    public AuthenticationController(IMediator mediator, IMapper mapper)
+    {
+        _mediator = mediator;
+        _mapper = mapper;
+    }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var command = new RegisterCommand(
-            request.Email,
-            request.Password,
-            request.Username,
-            request.FullName
-        );
-
-        Result<SuccessMessage> result = await _mediator.Send(command);
+        var command = _mapper.Map<RegisterCommand>(request);
+        var result = await _mediator.Send(command);
 
         return result.Match(
-            res => Ok(res),
+            res => Ok(_mapper.Map<RegiseterResponse>(res)),
             err =>
             {
                 var details = new ProblemDetails();
@@ -53,11 +53,11 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        var query = new LoginQuery(request.Email, request.Password);
-        Result<string> result = await _mediator.Send(query);
+        var query = _mapper.Map<LoginQuery>(request);
+        var result = await _mediator.Send(query);
 
         return result.Match(
-            res => Ok(res),
+            res => Ok(_mapper.Map<LoginResponse>(res)),
             err =>
             {
                 var details = new ProblemDetails();
