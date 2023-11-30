@@ -1,19 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>b2ea865f-8851-4751-906e-5a70af25f1ae</UserSecretsId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AgileX.Contracts\AgileX.Contracts.csproj" />
     <ProjectReference Include="..\AgileX.Infrastructure\AgileX.Infrastructure.csproj" />
+    <ProjectReference Include="..\AgileX.Application\AgileX.Application.csproj" />
   </ItemGroup>
 
 </Project>
