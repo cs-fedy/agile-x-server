@@ -10,17 +10,10 @@ namespace AgileX.Application.Authentication.Commands.Register;
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<SuccessMessage>>
 {
-    private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
 
-    public RegisterCommandHandler(
-        IJwtTokenGenerator jwtTokenGenerator,
-        IUserRepository userRepository
-    )
-    {
-        _jwtTokenGenerator = jwtTokenGenerator;
+    public RegisterCommandHandler(IUserRepository userRepository) =>
         _userRepository = userRepository;
-    }
 
     public async Task<Result<SuccessMessage>> Handle(
         RegisterCommand request,
@@ -30,7 +23,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
         await Task.CompletedTask;
         var existingUser = _userRepository.GetUserByEmail(request.Email);
         if (existingUser != null)
-            return Result<SuccessMessage>.From(Errors.User.UserAlreadyExist);
+            return Errors.User.UserAlreadyExist;
 
         DateTime createdAt = DateTime.UtcNow;
         User createdUser =
@@ -47,7 +40,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
 
         _userRepository.SaveUser(createdUser);
 
-        var successMessage = new SuccessMessage("user created successfully");
-        return Result<SuccessMessage>.From(successMessage);
+        return new SuccessMessage("user created successfully");
     }
 }
