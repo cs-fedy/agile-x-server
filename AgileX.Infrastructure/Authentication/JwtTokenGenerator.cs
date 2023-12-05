@@ -5,6 +5,7 @@ using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Domain.Entities;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AgileX.Infrastructure.Authentication;
@@ -14,10 +15,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly JwtSettings _jwtSettings;
 
-    public JwtTokenGenerator(
-        IDateTimeProvider dateTimeProvider,
-        IOptions<JwtSettings> jwtOptions
-    )
+    public JwtTokenGenerator(IDateTimeProvider dateTimeProvider, IOptions<JwtSettings> jwtOptions)
     {
         _dateTimeProvider = dateTimeProvider;
         _jwtSettings = jwtOptions.Value;
@@ -25,25 +23,25 @@ public class JwtTokenGenerator : IJwtTokenGenerator
 
     public string GenerateToken(User user)
     {
-        var signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(s: _jwtSettings.Secret)),
-            SecurityAlgorithms.HmacSha256
-        );
-#pragma warning restore CS8604 // Possible null reference argument.
-
+        var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
         var claims = new[]
         {
             new Claim("userId", user.UserId.ToString()),
-            new Claim("role", user.Role)
+            new Claim("isConfirmed", user.IsConfirmed.ToString()),
+            new Claim("role", user.Role),
         };
 
-        var accessToken = new JwtSecurityToken(
+        var securityToken = new JwtSecurityToken(
+            issuer: _jwtSettings.Issuer,
             claims: claims,
+            audience: _jwtSettings.Audience,
             expires: _dateTimeProvider.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
-            signingCredentials: signingCredentials,
-            issuer: _jwtSettings.Issuer
+            signingCredentials: new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature
+            )
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(accessToken);
+        return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }
 }

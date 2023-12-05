@@ -25,7 +25,7 @@ public class LoginHandlerQuery : IRequestHandler<LoginQuery, Result<LoginResul>>
         await Task.CompletedTask;
         var existingUser = _userRepository.GetUserByEmail(request.Email);
         if (existingUser == null)
-            return Errors.User.UserAlreadyExist;
+            return Errors.User.UserNotFound;
 
         var token = _jwtTokenGenerator.GenerateToken(existingUser);
         return new LoginResul(token);

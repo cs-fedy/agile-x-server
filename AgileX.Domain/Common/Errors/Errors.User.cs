@@ -10,5 +10,10 @@ public static class Errors
             code: "User.AlreadyExist",
             description: "User already exist - duplicate email"
         );
+
+        public static Error UserNotFound = Error.NotFound(
+            code: "User.NotFound",
+            description: "Requested user not found"
+        );
     }
 }

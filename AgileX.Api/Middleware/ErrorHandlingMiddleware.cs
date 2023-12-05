@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgileX.Api.Middleware;
@@ -9,7 +8,12 @@ public class ErrorHandlingMiddleware : IMiddleware
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         ProblemDetails details =
-            new() { Status = (int)context.Response.StatusCode, Detail = exception.Message, };
+            new()
+            {
+                Status = (int)context.Response.StatusCode,
+                Title = exception.Message,
+                Detail = exception.StackTrace
+            };
 
         var result = JsonSerializer.Serialize(details);
         context.Response.ContentType = "application/json";
