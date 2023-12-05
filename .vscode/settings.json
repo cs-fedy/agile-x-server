@@ -41,5 +41,8 @@
 		"**/obj": true,
 		"**/*.user": true,
 		"**/.vs": true,
-	}
+	},
+	"cSpell.words": [
+		"agilex"
+	]
 }

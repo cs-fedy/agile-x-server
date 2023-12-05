@@ -1,14 +1,72 @@
 version: "3.7"
 
 services:
-  main-api:
+  agilex-app:
     build:
       context: .
       dockerfile: AgileX.Api/Dockerfile
+    container_name: agilex-app
     restart: always
     ports:
-      - "5000:80"
+      - "5229:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - $APPDATA/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+    depends_on:
+      - agilex-db
+      - agilex-cache
+
+  agilex-nginx:
+    build: ./nginx
+    container_name: agilex-nginx
+    restart: always
+    ports:
+      - 5000:80
+    depends_on:
+      - agilex-app
+
+  agilex-db:
+    image: postgres
+    container_name: agilex-db
+    restart: unless-stopped
+    volumes:
+      - agilex-db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - 5432:5432
+
+  agilex-pgadmin:
+    image: dpage/pgadmin4
+    container_name: agilex-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - agilex-pgadmin-data:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    depends_on:
+      - agilex-db
+    restart: unless-stopped
+
+  agilex-cache:
+    image: redis
+    container_name: agilex-cache
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes:
+      - agilex-db_cache:/data
+
+volumes:
+  agilex-db_data:
+  agilex-db_cache:
+  agilex-pgadmin-data:
+
+networks:
+  agilex-proxy-server:

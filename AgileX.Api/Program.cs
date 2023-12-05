@@ -13,6 +13,7 @@ builder.Services
 
 var app = builder.Build();
 
+app.UsePathBase(new PathString("/api"));
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
