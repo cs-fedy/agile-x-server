@@ -1,7 +1,7 @@
 ﻿using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Persistence;
-using AgileX.Application.Common.Result;
-using AgileX.Domain.Common.Errors;
+using AgileX.Domain.Errors;
+using AgileX.Domain.Result;
 using MediatR;
 
 namespace AgileX.Application.Authentication.Queries.Login;

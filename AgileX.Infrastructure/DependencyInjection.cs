@@ -5,7 +5,9 @@ using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Infrastructure.Authentication;
 using AgileX.Infrastructure.Persistence;
 using AgileX.Infrastructure.Services;
+using AgileX.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,10 +23,46 @@ public static class DependencyInjection
     )
     {
         services.AddAuth(configuration);
+        services.AddDatabase(configuration);
+        services.AddProviders(configuration);
+        services.AddRepositories(configuration);
 
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        return services;
+    }
+
+    public static IServiceCollection AddRepositories(
+        this IServiceCollection services,
+        ConfigurationManager configuration
+    )
+    {
         services.AddScoped<IUserRepository, UserRepository>();
+        return services;
+    }
 
+    public static IServiceCollection AddProviders(
+        this IServiceCollection services,
+        ConfigurationManager configuration
+    )
+    {
+        SendGridSettings settings = new();
+        configuration.Bind(SendGridSettings.SectionName, settings);
+        services.AddSingleton(new SendGrid.SendGridClient(settings.Key));
+
+        services.AddSingleton<IEmailProvider, SendGridProvider>();
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddSingleton<IPasswordProvider, PasswordProvider>();
+        return services;
+    }
+
+    public static IServiceCollection AddDatabase(
+        this IServiceCollection services,
+        ConfigurationManager configuration
+    )
+    {
+        DatabaseSettings settings = new();
+        configuration.Bind(DatabaseSettings.SectionName, settings);
+
+        services.AddDbContext<CustomDbContext>(options => options.UseNpgsql(settings.PgCnxString));
         return services;
     }
 

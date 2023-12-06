@@ -3,13 +3,13 @@
 public record User(
     Guid UserId,
     string Email,
-    string Passsword,
+    string Password,
     string FullName,
     string Username,
-    string Role,
+    Role Role,
     DateTime CreatedAt,
     DateTime UpdatedAt,
     bool IsConfirmed = false,
     bool IsDeleted = false,
-    DateTime? DletedAt = null
+    DateTime? DeletedAt = null
 );

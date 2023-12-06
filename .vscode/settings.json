@@ -43,6 +43,10 @@
 		"**/.vs": true,
 	},
 	"cSpell.words": [
-		"agilex"
+		"agilex",
+		"Hmac",
+		"Mapster",
+		"Mediat",
+		"Npgsql"
 	]
 }

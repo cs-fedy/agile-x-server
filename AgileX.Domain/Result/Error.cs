@@ -1,4 +1,4 @@
-﻿namespace AgileX.Domain.Common.Result;
+﻿namespace AgileX.Domain.Result;
 
 public struct Error
 {

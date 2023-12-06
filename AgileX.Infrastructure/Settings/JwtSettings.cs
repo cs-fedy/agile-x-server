@@ -1,4 +1,4 @@
-﻿namespace AgileX.Infrastructure;
+﻿namespace AgileX.Infrastructure.Settings;
 
 public class JwtSettings
 {

@@ -2,4 +2,4 @@
 
 namespace AgileX.Contracts.Authentication.Register;
 
-public record RegiseterResponse(string Message);
+public record RegisterResponse(string Message);

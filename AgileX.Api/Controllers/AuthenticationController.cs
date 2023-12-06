@@ -1,9 +1,7 @@
 ﻿using AgileX.Application.Authentication.Commands.Register;
 using AgileX.Application.Authentication.Queries.Login;
-using AgileX.Application.Common.Result;
 using AgileX.Contracts.Authentication.Login;
 using AgileX.Contracts.Authentication.Register;
-using AgileX.Domain.Common.Result;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +28,7 @@ public class AuthenticationController : ControllerBase
         var result = await _mediator.Send(command);
 
         return result.Match(
-            res => Ok(_mapper.Map<RegiseterResponse>(res)),
+            res => Ok(_mapper.Map<RegisterResponse>(res)),
             err =>
             {
                 var details = new ProblemDetails();

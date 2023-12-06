@@ -1,6 +1,4 @@
-﻿using AgileX.Domain.Common.Result;
-
-namespace AgileX.Application.Common.Result;
+﻿namespace AgileX.Domain.Result;
 
 public class Result<T>
 {

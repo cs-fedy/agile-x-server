@@ -4,6 +4,7 @@ using System.Text;
 using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Domain.Entities;
+using AgileX.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -28,7 +29,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         {
             new Claim("userId", user.UserId.ToString()),
             new Claim("isConfirmed", user.IsConfirmed.ToString()),
-            new Claim("role", user.Role),
+            new Claim("role", user.Role == Role.USER ? "user" : "admin"),
         };
 
         var securityToken = new JwtSecurityToken(

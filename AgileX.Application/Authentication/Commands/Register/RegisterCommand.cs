@@ -1,5 +1,4 @@
-﻿using AgileX.Application.Common.Result;
-using AgileX.Domain.Common.Result;
+﻿using AgileX.Domain.Result;
 using MediatR;
 
 namespace AgileX.Application.Authentication.Commands.Register;

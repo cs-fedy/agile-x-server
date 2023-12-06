@@ -1,6 +1,6 @@
-﻿using AgileX.Domain.Common.Result;
+﻿using AgileX.Domain.Result;
 
-namespace AgileX.Domain.Common.Errors;
+namespace AgileX.Domain.Errors;
 
 public static class Errors
 {

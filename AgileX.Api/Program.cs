@@ -5,11 +5,7 @@ using AgileX.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddPresentation()
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration);
-
+builder.Services.AddPresentation().AddApplication().AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
