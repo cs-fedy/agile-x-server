@@ -1,4 +1,6 @@
-﻿namespace AgileX.Domain.Entities;
+﻿using AgileX.Domain.ObjectValues;
+
+namespace AgileX.Domain.Entities;
 
 public record User(
     Guid UserId,

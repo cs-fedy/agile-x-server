@@ -1,8 +1,9 @@
 ﻿using AgileX.Domain.Entities;
+using AgileX.Domain.ObjectValues;
 
 namespace AgileX.Application.Common.Interfaces.Authentication;
 
 public interface IJwtTokenGenerator
 {
-    string GenerateToken(User user);
+    AccessToken GenerateToken(User user);
 }

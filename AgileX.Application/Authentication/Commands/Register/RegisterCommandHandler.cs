@@ -1,10 +1,12 @@
 ﻿using AgileX.Application.Common.Interfaces.Persistence;
 using AgileX.Application.Common.Interfaces.Services;
-using AgileX.Application.Common.Result;
-using AgileX.Domain.Common.Errors;
-using AgileX.Domain.Common.Result;
+using AgileX.Application.Common.Services;
 using AgileX.Domain.Entities;
+using AgileX.Domain.Errors;
+using AgileX.Domain.ObjectValues;
+using AgileX.Domain.Result;
 using MediatR;
+using DomainEvents = AgileX.Domain.Events.Events;
 
 namespace AgileX.Application.Authentication.Commands.Register;
 
@@ -12,13 +14,18 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordProvider _passwordProvider;
+    private readonly IEventProvider _eventProvider;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IPasswordProvider passwordProvider)
+    public RegisterCommandHandler(
+        IUserRepository userRepository,
+        IPasswordProvider passwordProvider,
+        IEventProvider eventProvider
+    )
     {
         _userRepository = userRepository;
         _passwordProvider = passwordProvider;
+        _eventProvider = eventProvider;
     }
-       
 
     public async Task<Result<SuccessMessage>> Handle(
         RegisterCommand request,
@@ -30,8 +37,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
         if (existingUser != null)
             return Errors.User.UserAlreadyExist;
 
-        string hashedPassword = _passwordProvider.hash(request.Password);
-        DateTime createdAt = DateTime.UtcNow;
+        var hashedPassword = _passwordProvider.hash(request.Password);
+        var createdAt = DateTime.UtcNow;
 
         User createdUser =
             new(
@@ -47,7 +54,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
 
         _userRepository.SaveUser(createdUser);
 
-        // TODO: emit an event using mediatR telling that the user has been created
+        await _eventProvider.Publish(new DomainEvents.User.UserCreated(createdUser.UserId));
 
         return new SuccessMessage("user created successfully");
     }

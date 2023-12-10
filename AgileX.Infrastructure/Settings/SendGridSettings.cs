@@ -4,4 +4,5 @@ public class SendGridSettings
 {
     public const string SectionName = "SendGridSettings";
     public string Key { get; init; }
+    public string Sender { get; init; }
 }

@@ -1,3 +1,5 @@
-﻿namespace AgileX.Contracts.Authentication.Login;
+﻿using AgileX.Contracts.Authentication.Common;
 
-public record LoginResponse(string AccessToken);
+namespace AgileX.Contracts.Authentication.Login;
+
+public record LoginResponse(AccessToken AccessToken, RefreshToken RefreshToken);

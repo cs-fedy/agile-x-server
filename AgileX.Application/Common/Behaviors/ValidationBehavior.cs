@@ -1,5 +1,4 @@
-﻿using AgileX.Application.Common.Result;
-using AgileX.Domain.Result;
+﻿using AgileX.Domain.Result;
 using FluentValidation;
 using MediatR;
 

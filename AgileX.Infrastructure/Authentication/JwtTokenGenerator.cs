@@ -4,9 +4,9 @@ using System.Text;
 using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Domain.Entities;
+using AgileX.Domain.ObjectValues;
 using AgileX.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AgileX.Infrastructure.Authentication;
@@ -22,7 +22,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         _jwtSettings = jwtOptions.Value;
     }
 
-    public string GenerateToken(User user)
+    public AccessToken GenerateToken(User user)
     {
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
         var claims = new[]
@@ -32,17 +32,20 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             new Claim("role", user.Role == Role.USER ? "user" : "admin"),
         };
 
+        var expiresIn = _dateTimeProvider.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes);
+
         var securityToken = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
             claims: claims,
             audience: _jwtSettings.Audience,
-            expires: _dateTimeProvider.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
+            expires: expiresIn,
             signingCredentials: new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             )
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(securityToken);
+        string token = new JwtSecurityTokenHandler().WriteToken(securityToken);
+        return new AccessToken(token, expiresIn);
     }
 }

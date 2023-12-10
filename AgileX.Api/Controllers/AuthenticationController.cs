@@ -55,7 +55,25 @@ public class AuthenticationController : ControllerBase
         var result = await _mediator.Send(query);
 
         return result.Match(
-            res => Ok(_mapper.Map<LoginResponse>(res)),
+            res =>
+            {
+                Response
+                    .Cookies
+                    .Append(
+                        "refresh-token",
+                        res.RefreshToken.token.ToString(),
+                        new CookieOptions()
+                        {
+                            HttpOnly = true,
+                            Domain = HttpContext.Request.Host.ToString(),
+                            Path = HttpContext.Request.Path,
+                            SameSite = SameSiteMode.None,
+                            Secure = HttpContext.Request.IsHttps
+                        }
+                    );
+
+                return Ok(_mapper.Map<LoginResponse>(res));
+            },
             err =>
             {
                 var details = new ProblemDetails();

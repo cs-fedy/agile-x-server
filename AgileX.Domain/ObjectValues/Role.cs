@@ -1,4 +1,4 @@
-namespace AgileX.Domain.Entities;
+namespace AgileX.Domain.ObjectValues;
 
 public enum Role
 {

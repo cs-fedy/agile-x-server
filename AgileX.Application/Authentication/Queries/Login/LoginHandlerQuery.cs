@@ -9,12 +9,21 @@ namespace AgileX.Application.Authentication.Queries.Login;
 public class LoginHandlerQuery : IRequestHandler<LoginQuery, Result<LoginResul>>
 {
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IRefreshGenerator _refreshGenerator;
     private readonly IUserRepository _userRepository;
+    private readonly ICacheRepository _cacheRepository;
 
-    public LoginHandlerQuery(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository)
+    public LoginHandlerQuery(
+        IJwtTokenGenerator jwtTokenGenerator,
+        IRefreshGenerator refreshGenerator,
+        IUserRepository userRepository,
+        ICacheRepository cacheRepository
+    )
     {
         _jwtTokenGenerator = jwtTokenGenerator;
+        _refreshGenerator = refreshGenerator;
         _userRepository = userRepository;
+        _cacheRepository = cacheRepository;
     }
 
     public async Task<Result<LoginResul>> Handle(
@@ -28,6 +37,9 @@ public class LoginHandlerQuery : IRequestHandler<LoginQuery, Result<LoginResul>>
             return Errors.User.UserNotFound;
 
         var token = _jwtTokenGenerator.GenerateToken(existingUser);
-        return new LoginResul(token);
+        await _cacheRepository.Cache($"token-list_{token.token}", true, token.expiresIn);
+        var refresh = _refreshGenerator.Generate();
+
+        return new LoginResul(AccessToken: token, RefreshToken: refresh);
     }
 }

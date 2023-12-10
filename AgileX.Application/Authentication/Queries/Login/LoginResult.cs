@@ -1,3 +1,6 @@
-﻿namespace AgileX.Application.Authentication.Queries.Login;
+﻿using AgileX.Domain.Entities;
+using AgileX.Domain.ObjectValues;
 
-public record LoginResul(string AccessToken);
+namespace AgileX.Application.Authentication.Queries.Login;
+
+public record LoginResul(AccessToken AccessToken, RefreshToken RefreshToken);
