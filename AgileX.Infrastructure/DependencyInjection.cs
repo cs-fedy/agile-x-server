@@ -1,8 +1,8 @@
 ﻿using System.Text;
+using AgileX.Application.Common;
 using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Persistence;
 using AgileX.Application.Common.Interfaces.Services;
-using AgileX.Application.Common.Services;
 using AgileX.Infrastructure.Authentication;
 using AgileX.Infrastructure.Cache;
 using AgileX.Infrastructure.Persistence;
@@ -46,22 +46,23 @@ public static class DependencyInjection
 
     private static IServiceCollection AddProviders(
         this IServiceCollection services,
-        ConfigurationManager configuration
+        IConfiguration configuration
     )
     {
         SendGridSettings settings = new();
         configuration.Bind(SendGridSettings.SectionName, settings);
 
-        services.AddSingleton(
+        services.AddSingleton<IEmailProvider>(
             new SendGridProvider(
                 new SendGrid.SendGridClient(settings.Key),
                 new EmailAddress(settings.Sender)
             )
         );
 
+        services.AddScoped<IEventProvider, EventProvider>();
+
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<IPasswordProvider, PasswordProvider>();
-        services.AddSingleton<IEventProvider, EventProvider>();
         services.AddSingleton<ICodeProvider, CodeProvider>();
 
         return services;
@@ -97,7 +98,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddAuth(
         this IServiceCollection services,
-        ConfigurationManager configuration
+        IConfiguration configuration
     )
     {
         JwtSettings settings = new();
@@ -105,12 +106,13 @@ public static class DependencyInjection
 
         services.AddSingleton(Options.Create(settings));
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddSingleton<IRefreshGenerator, RefreshGenerator>();
 
         services
             .AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(
                 options =>
-                    options.TokenValidationParameters = new()
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,

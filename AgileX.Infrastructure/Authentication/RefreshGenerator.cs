@@ -1,4 +1,5 @@
 using AgileX.Application.Common.Interfaces.Authentication;
+using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Domain.ObjectValues;
 using AgileX.Infrastructure.Services;
 using AgileX.Infrastructure.Settings;
@@ -8,11 +9,11 @@ namespace AgileX.Infrastructure.Authentication;
 
 public class RefreshGenerator : IRefreshGenerator
 {
-    private readonly DateTimeProvider _dateTimeProvider;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly RefreshSettings _refreshSettings;
 
     public RefreshGenerator(
-        DateTimeProvider dateTimeProvider,
+        IDateTimeProvider dateTimeProvider,
         IOptions<RefreshSettings> refreshOptions
     )
     {

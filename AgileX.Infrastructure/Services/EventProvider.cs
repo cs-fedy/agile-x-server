@@ -1,4 +1,4 @@
-using AgileX.Application.Common.Services;
+using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Domain.Events;
 using MediatR;
 

@@ -1,7 +1,7 @@
 ﻿using AgileX.Application.Common.Interfaces.Persistence;
 using AgileX.Domain.Entities;
 
-namespace AgileX.Infrastructure.Persistence;
+namespace AgileX.Infrastructure.Persistence.Repositories;
 
 public class UserRepository : IUserRepository
 {
@@ -10,10 +10,10 @@ public class UserRepository : IUserRepository
     public UserRepository(CustomDbContext dbContext) => _dbContext = dbContext;
 
     public User? GetUserByEmail(string email) =>
-        _dbContext.Users.Where(user => user.Email == email && !user.IsDeleted).SingleOrDefault();
+        _dbContext.Users.SingleOrDefault(user => user.Email == email && !user.IsDeleted);
 
     public User? GetUserById(Guid userId) =>
-        _dbContext.Users.Where(user => user.UserId == userId && !user.IsDeleted).SingleOrDefault();
+        _dbContext.Users.SingleOrDefault(user => user.UserId == userId && !user.IsDeleted);
 
     public void SaveUser(User user)
     {

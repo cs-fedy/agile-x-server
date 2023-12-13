@@ -27,9 +27,9 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
         var claims = new[]
         {
-            new Claim("userId", user.UserId.ToString()),
-            new Claim("isConfirmed", user.IsConfirmed.ToString()),
-            new Claim("role", user.Role == Role.USER ? "user" : "admin"),
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Authentication, user.IsConfirmed ? "CONFIRMED" : "NOT_CONFIRMED"),
+            new Claim(ClaimTypes.Role, user.Role == Role.USER ? "user" : "admin"),
         };
 
         var expiresIn = _dateTimeProvider.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes);

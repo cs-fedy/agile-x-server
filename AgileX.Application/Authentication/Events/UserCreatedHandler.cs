@@ -14,7 +14,7 @@ public class UserCreatedHandler : INotificationHandler<DomainEvents.User.UserCre
     private readonly ICodeProvider _codeProvider;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    private const int EMAIL_CONFIRMATION_CODE_EXPIRY_MINUTES = 60;
+    private const int EmailConfirmationCodeExpiryMinutes = 60;
 
     public UserCreatedHandler(
         IUserRepository userRepository,
@@ -44,7 +44,7 @@ public class UserCreatedHandler : INotificationHandler<DomainEvents.User.UserCre
 
         var code = _codeProvider.Generate(
             5,
-            _dateTimeProvider.UtcNow.AddMinutes(EMAIL_CONFIRMATION_CODE_EXPIRY_MINUTES)
+            _dateTimeProvider.UtcNow.AddMinutes(EmailConfirmationCodeExpiryMinutes)
         );
 
         _cacheRepository.Cache(
@@ -54,7 +54,7 @@ public class UserCreatedHandler : INotificationHandler<DomainEvents.User.UserCre
         );
 
         // TODO: use relative time instead of plain object
-        Email email = new Email(
+        var email = new Email(
             To: new List<string>() { existingUser.Email },
             Subject: "Account created successfully",
             PlainTextContent: $"Dear {existingUser.FullName}. \n"

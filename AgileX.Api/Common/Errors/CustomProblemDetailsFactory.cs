@@ -35,7 +35,7 @@ public class CustomProblemDetailsFactory : ProblemDetailsFactory
         {
             if (context.Error is CustomException ybe)
             {
-                statusCode = 400;
+                statusCode = ybe.Status ?? 400;
                 httpContext.Response.StatusCode = statusCode.Value;
 
                 problemDetails = new ProblemDetails

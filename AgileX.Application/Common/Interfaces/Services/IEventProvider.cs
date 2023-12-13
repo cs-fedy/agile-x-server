@@ -1,6 +1,6 @@
 using AgileX.Domain.Events;
 
-namespace AgileX.Application.Common.Services;
+namespace AgileX.Application.Common.Interfaces.Services;
 
 public interface IEventProvider
 {

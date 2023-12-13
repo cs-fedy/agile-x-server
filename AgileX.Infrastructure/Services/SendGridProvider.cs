@@ -8,25 +8,25 @@ namespace AgileX.Infrastructure.Services;
 public class SendGridProvider : IEmailProvider
 {
     private readonly ISendGridClient _sendGridClient;
-    private readonly EmailAddress _email_sender;
+    private readonly EmailAddress _emailSender;
 
     public SendGridProvider(ISendGridClient sendGridClient, EmailAddress emailSender)
     {
         _sendGridClient = sendGridClient;
-        _email_sender = emailSender;
+        _emailSender = emailSender;
     }
 
-    public async Task Send(Email EmailDetails)
+    public async Task Send(Email emailDetails)
     {
         SendGridMessage message =
             new()
             {
-                From = _email_sender,
-                Subject = EmailDetails.Subject,
-                PlainTextContent = EmailDetails.PlainTextContent
+                From = _emailSender,
+                Subject = emailDetails.Subject,
+                PlainTextContent = emailDetails.PlainTextContent
             };
 
-        foreach (var s in EmailDetails.To)
+        foreach (var s in emailDetails.To)
             message.AddTo(new EmailAddress());
 
         await _sendGridClient.SendEmailAsync(message);
