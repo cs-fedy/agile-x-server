@@ -1,5 +1,5 @@
-﻿using AgileX.Application.Authentication.Commands.Register;
-using AgileX.Application.Authentication.Queries.Login;
+﻿using AgileX.Application.Authentication.Commands.Login;
+using AgileX.Application.Authentication.Commands.Register;
 using AgileX.Contracts.Authentication.Login;
 using AgileX.Contracts.Authentication.Register;
 using Mapster;
@@ -13,7 +13,7 @@ public class AuthenticationMappingConfig : IRegister
         config.NewConfig<RegisterRequest, RegisterCommand>();
         config.NewConfig<RegisterCommand, RegisterResponse>();
 
-        config.NewConfig<LoginRequest, LoginQuery>();
-        config.NewConfig<LoginQuery, LoginResponse>();
+        config.NewConfig<LoginRequest, LoginCommand>();
+        config.NewConfig<LoginCommand, LoginResponse>();
     }
 }

@@ -1,5 +1,5 @@
-﻿using AgileX.Application.Authentication.Commands.Register;
-using AgileX.Application.Authentication.Queries.Login;
+﻿using AgileX.Application.Authentication.Commands.Login;
+using AgileX.Application.Authentication.Commands.Register;
 using AgileX.Contracts.Authentication.Login;
 using AgileX.Contracts.Authentication.Register;
 using MapsterMapper;
@@ -15,7 +15,7 @@ public class AuthenticationController : ControllerBase
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
 
-    public AuthenticationController(IMediator mediator, IMapper mapper)
+    public AuthenticationController(ISender mediator, IMapper mapper)
     {
         _mediator = mediator;
         _mapper = mapper;
@@ -51,17 +51,18 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        var query = _mapper.Map<LoginQuery>(request);
+        var query = _mapper.Map<LoginCommand>(request);
         var result = await _mediator.Send(query);
 
         return result.Match(
             res =>
             {
-                Response
+                HttpContext
+                    .Response
                     .Cookies
                     .Append(
                         "refresh-token",
-                        res.RefreshToken.token.ToString(),
+                        res.RefreshToken.Token.ToString(),
                         new CookieOptions()
                         {
                             HttpOnly = true,
@@ -72,7 +73,8 @@ public class AuthenticationController : ControllerBase
                         }
                     );
 
-                return Ok(_mapper.Map<LoginResponse>(res));
+                var mappedData = _mapper.Map<LoginResponse>(res);
+                return Ok(mappedData);
             },
             err =>
             {

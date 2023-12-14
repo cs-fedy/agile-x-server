@@ -2,10 +2,10 @@
 using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Domain.Entities;
 using AgileX.Domain.Errors;
+using AgileX.Domain.Events;
 using AgileX.Domain.ObjectValues;
 using AgileX.Domain.Result;
 using MediatR;
-using DomainEvents = AgileX.Domain.Events.Events;
 
 namespace AgileX.Application.Authentication.Commands.Register;
 
@@ -31,10 +31,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
         CancellationToken cancellationToken
     )
     {
-        await Task.CompletedTask;
         var existingUser = _userRepository.GetUserByEmail(request.Email);
         if (existingUser != null)
-            return Errors.User.UserAlreadyExist;
+            return UserErrors.UserAlreadyExist;
 
         var hashedPassword = _passwordProvider.hash(request.Password);
         var createdAt = DateTime.UtcNow;
@@ -53,7 +52,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
 
         _userRepository.SaveUser(createdUser);
 
-        await _eventProvider.Publish(new DomainEvents.User.UserCreated(createdUser.UserId));
+        await _eventProvider.Publish(new UserCreated(createdUser.UserId));
 
         return new SuccessMessage("user created successfully");
     }

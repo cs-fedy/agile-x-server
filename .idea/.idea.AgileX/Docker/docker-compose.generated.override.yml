@@ -1,0 +1,36 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.7"
+services:
+  agilex-app:
+    build:
+      context: "C:\\data\\net-projects\\AgileX"
+      dockerfile: "AgileX.Api/Dockerfile"
+      target: "base"
+      args:
+        BUILD_CONFIGURATION: "Debug"
+    command: []
+    entrypoint:
+    - "/opt/rider-debugger/linux-x64/dotnet/dotnet"
+    - "/opt/rider-debugger/JetBrains.Debugger.Worker.exe"
+    - "--mode=server"
+    - "--frontend-port=57100"
+    - "--backend-port=57300"
+    - "--timeout=60"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      RIDER_DEBUGGER_LOG_DIR: "/var/opt/rider-debugger"
+      RESHARPER_LOG_CONF: "/etc/opt/rider-debugger/backend-log.xml"
+    image: "agilex.api:dev"
+    ports:
+    - "127.0.0.1:57011:57100"
+    - "127.0.0.1:57211:57300"
+    volumes:
+    - "C:\\Users\\foody\\.nuget\\packages:/root/.nuget/packages"
+    - "C:\\data\\net-projects\\AgileX\\AgileX.Api:/app:rw"
+    - "C:\\data\\net-projects\\AgileX:/src:rw"
+    - "C:\\Users\\foody\\AppData\\Local\\JetBrains\\RiderRemoteDebugger\\2023.3\\\
+      Linux64:/opt/rider-debugger"
+    - "C:\\Users\\foody\\AppData\\Local\\Programs\\Rider\\bin:/etc/opt/rider-debugger/backend-log.xml"
+    - "C:\\Users\\foody\\AppData\\Local\\JetBrains\\Rider2023.3\\log\\DebuggerWorker\\\
+      JetBrains.Debugger.Worker.2023_12_14_12_34_52:/var/opt/rider-debugger:rw"
+    working_dir: "/app"

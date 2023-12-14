@@ -1,7 +1,7 @@
 using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Services;
+using AgileX.Application.Common.Types;
 using AgileX.Domain.ObjectValues;
-using AgileX.Infrastructure.Services;
 using AgileX.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 

@@ -1,5 +1,4 @@
-using AgileX.Domain.Entities;
-using AgileX.Domain.ObjectValues;
+using AgileX.Application.Common.Types;
 
 namespace AgileX.Application.Common.Interfaces.Authentication;
 

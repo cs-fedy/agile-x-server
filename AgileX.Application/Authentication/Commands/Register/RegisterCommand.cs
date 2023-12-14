@@ -3,5 +3,9 @@ using MediatR;
 
 namespace AgileX.Application.Authentication.Commands.Register;
 
-public record RegisterCommand(string Email, string Password, string Username, string FullName)
-    : IRequest<Result<SuccessMessage>>;
+public abstract record RegisterCommand(
+    string Email,
+    string Password,
+    string Username,
+    string FullName
+) : IRequest<Result<SuccessMessage>>;

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Services;
+using AgileX.Application.Common.Types;
 using AgileX.Domain.Entities;
 using AgileX.Domain.ObjectValues;
 using AgileX.Infrastructure.Settings;
@@ -45,7 +46,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             )
         );
 
-        string token = new JwtSecurityTokenHandler().WriteToken(securityToken);
+        var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
         return new AccessToken(token, expiresIn);
     }
 }

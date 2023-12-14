@@ -16,13 +16,14 @@ services:
     depends_on:
       - agilex-db
       - agilex-cache
+      - agilex-message-queue
 
   agilex-nginx:
     build: ./nginx
     container_name: agilex-nginx
     restart: always
     ports:
-      - 5000:80
+      - "5000:80"
     depends_on:
       - agilex-app
 
@@ -38,7 +39,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - 5432:5432
+      - "5432:5432"
 
   agilex-pgadmin:
     image: dpage/pgadmin4
@@ -49,7 +50,7 @@ services:
     volumes:
       - agilex-pgadmin-data:/var/lib/pgadmin
     ports:
-      - 5050:80
+      - "5050:80"
     depends_on:
       - agilex-db
     restart: unless-stopped
@@ -59,14 +60,30 @@ services:
     container_name: agilex-cache
     restart: unless-stopped
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - agilex-db_cache:/data
+        
+  agilex-message-queue:
+    image: rabbitmq:3.12.10-management
+    container_name: agilex-message-queue
+    hostname: ${MESSAGE_QUEUE_HOST_NAME}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${MESSAGE_QUEUE_USER}
+      RABBITMQ_DEFAULT_PASS: ${MESSAGE_QUEUE_PASSWORD}
+    volumes:
+      - agilex-message-queue-data:/var/lib/rabbitmq
+      - agilex-message-queue-log:/var/log/rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
 
 volumes:
   agilex-db_data:
   agilex-db_cache:
   agilex-pgadmin-data:
+  agilex-message-queue-data:
+  agilex-message-queue-log:
 
 networks:
   agilex-proxy-server:

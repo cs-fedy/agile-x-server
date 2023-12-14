@@ -27,7 +27,7 @@ public class SendGridProvider : IEmailProvider
             };
 
         foreach (var s in emailDetails.To)
-            message.AddTo(new EmailAddress());
+            message.AddTo(new EmailAddress(s));
 
         await _sendGridClient.SendEmailAsync(message);
     }

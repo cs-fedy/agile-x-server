@@ -12,11 +12,13 @@ public class CacheRepository : ICacheRepository
     public async Task Cache<TValue>(string key, TValue value, DateTime expiresIn)
     {
         var serializedValue = Serialize<TValue>(value);
-        await _db.StringSetAsync(
-            key,
-            serializedValue,
-            TimeSpan.FromMicroseconds(expiresIn.Millisecond)
-        );
+        await _db.StringSetAsync(key, serializedValue, expiresIn.TimeOfDay);
+    }
+
+    public async Task Remove(string key)
+    {
+        _db.KeyDelete(key);
+        await Task.CompletedTask;
     }
 
     public async Task<object?> Fetch<TValue>(string key)

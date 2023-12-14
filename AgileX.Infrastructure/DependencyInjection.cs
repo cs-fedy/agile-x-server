@@ -1,14 +1,17 @@
-﻿using System.Text;
-using AgileX.Application.Common;
+﻿using System.Reflection;
+using System.Text;
+using AgileX.Application.Common.Events;
 using AgileX.Application.Common.Interfaces.Authentication;
 using AgileX.Application.Common.Interfaces.Persistence;
 using AgileX.Application.Common.Interfaces.Services;
 using AgileX.Infrastructure.Authentication;
 using AgileX.Infrastructure.Cache;
+using AgileX.Infrastructure.MessageBroker;
 using AgileX.Infrastructure.Persistence;
 using AgileX.Infrastructure.Persistence.Repositories;
 using AgileX.Infrastructure.Services;
 using AgileX.Infrastructure.Settings;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,23 +34,54 @@ public static class DependencyInjection
         services.AddDatabase(configuration);
         services.AddProviders(configuration);
         services.AddRepositories(configuration);
+        services.AddMessageQueue(configuration);
 
         return services;
     }
 
-    private static IServiceCollection AddRepositories(
-        this IServiceCollection services,
-        ConfigurationManager configuration
-    )
-    {
-        services.AddScoped<IUserRepository, UserRepository>();
-        return services;
-    }
-
-    private static IServiceCollection AddProviders(
+    private static void AddMessageQueue(
         this IServiceCollection services,
         IConfiguration configuration
     )
+    {
+        MessageBrokerSettings settings = new();
+        configuration.Bind(MessageBrokerSettings.SectionName, settings);
+
+        services.AddSingleton(sp => sp.GetRequiredService<IOptions<MessageBrokerSettings>>().Value);
+        services.AddMassTransit(busConfigurator =>
+        {
+            busConfigurator.SetKebabCaseEndpointNameFormatter();
+            // TODO: fix unroutable messages
+            busConfigurator.AddConsumers(Assembly.GetEntryAssembly());
+
+            busConfigurator.UsingRabbitMq(
+                (context, configurator) =>
+                {
+                    configurator.Host(
+                        new Uri(settings.Host),
+                        host =>
+                        {
+                            host.Username(settings.Username);
+                            host.Password(settings.Password);
+                        }
+                    );
+                }
+            );
+        });
+
+        services.AddTransient<IEventBus, EventBus>();
+    }
+
+    private static void AddRepositories(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshRepository, RefreshRepository>();
+    }
+
+    private static void AddProviders(this IServiceCollection services, IConfiguration configuration)
     {
         SendGridSettings settings = new();
         configuration.Bind(SendGridSettings.SectionName, settings);
@@ -60,18 +94,12 @@ public static class DependencyInjection
         );
 
         services.AddScoped<IEventProvider, EventProvider>();
-
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<IPasswordProvider, PasswordProvider>();
         services.AddSingleton<ICodeProvider, CodeProvider>();
-
-        return services;
     }
 
-    private static IServiceCollection AddCache(
-        this IServiceCollection services,
-        ConfigurationManager configuration
-    )
+    private static void AddCache(this IServiceCollection services, IConfiguration configuration)
     {
         RedisSettings settings = new();
         configuration.Bind(RedisSettings.SectionName, settings);
@@ -80,26 +108,16 @@ public static class DependencyInjection
         services.AddSingleton(redisClient.RedisDB);
 
         services.AddScoped<ICacheRepository, CacheRepository>();
-
-        return services;
     }
 
-    private static IServiceCollection AddDatabase(
-        this IServiceCollection services,
-        ConfigurationManager configuration
-    )
+    private static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         DatabaseSettings settings = new();
         configuration.Bind(DatabaseSettings.SectionName, settings);
-
         services.AddDbContext<CustomDbContext>(options => options.UseNpgsql(settings.PgCnxString));
-        return services;
     }
 
-    private static IServiceCollection AddAuth(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    private static void AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
         JwtSettings settings = new();
         configuration.Bind(JwtSettings.SectionName, settings);
@@ -125,7 +143,5 @@ public static class DependencyInjection
                         )
                     }
             );
-
-        return services;
     }
 }
