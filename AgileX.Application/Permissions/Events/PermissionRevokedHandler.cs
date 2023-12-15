@@ -6,14 +6,14 @@ using MediatR;
 
 namespace AgileX.Application.Permissions.Events;
 
-public class PermissionGrantedHandler : INotificationHandler<PermissionGranted>
+public class PermissionRevokedHandler : INotificationHandler<PermissionRevoked>
 {
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IMemberPermissionRepository _memberPermissionRepository;
     private readonly IEventBus _eventBus;
 
-    public PermissionGrantedHandler(
+    public PermissionRevokedHandler(
         IUserRepository userRepository,
         IMemberPermissionRepository memberPermissionRepository,
         IProjectRepository projectRepository,
@@ -26,7 +26,7 @@ public class PermissionGrantedHandler : INotificationHandler<PermissionGranted>
         _eventBus = eventBus;
     }
 
-    public async Task Handle(PermissionGranted notification, CancellationToken cancellationToken)
+    public async Task Handle(PermissionRevoked notification, CancellationToken cancellationToken)
     {
         var existingUser = _userRepository.GetById(notification.UserId);
         if (existingUser is null || existingUser.IsDeleted)
@@ -47,10 +47,10 @@ public class PermissionGrantedHandler : INotificationHandler<PermissionGranted>
 
         var email = new Email(
             To: new List<string>() { existingUser.Email },
-            Subject: "Permission granted successfully",
+            Subject: "Permission revoked successfully",
             PlainTextContent: $"Dear {existingUser.FullName}. \n"
-                + $"As a member in the `{existingProject.Name}` you have been granted"
-                + $" the `{existingPermission.Name}` permission."
+                + $"As a member in the `{existingProject.Name}` you have been revoked "
+                + $"from the `{existingPermission.Name}` permission."
         );
 
         await _eventBus.Publish(new NewEmail(email), cancellationToken);

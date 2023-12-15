@@ -34,7 +34,6 @@ public sealed class UserCreatedHandler : INotificationHandler<UserCreated>
     public async Task Handle(UserCreated notification, CancellationToken cancellationToken)
     {
         var existingUser = _userRepository.GetById(notification.UserId);
-
         // TODO: instead of returning task completed, handle this error by putting it in an error queue
         if (existingUser is null || existingUser.IsDeleted)
             return;

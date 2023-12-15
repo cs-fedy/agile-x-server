@@ -13,4 +13,9 @@ public class PermissionErrors
         code: "Permission.AlreadyGranted",
         description: "Permission already granted"
     );
+
+    public static Error PermissionNotFound = Error.NotFound(
+        code: "Permission.NotFound",
+        description: "Permission not found"
+    );
 }

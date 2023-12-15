@@ -1,30 +1,28 @@
 using AgileX.Application.Common.Interfaces.Persistence;
 using AgileX.Application.Common.Interfaces.Services;
-using AgileX.Domain.Entities;
+using AgileX.Application.Permissions.Commands.GrantPermission;
 using AgileX.Domain.Errors;
 using AgileX.Domain.Events;
 using AgileX.Domain.ObjectValues;
 using AgileX.Domain.Result;
 using MediatR;
 
-namespace AgileX.Application.Permissions.Commands.GrantPermission;
+namespace AgileX.Application.Permissions.Commands.RevokePermission;
 
-public class GrantPermissionCommandHandler
+public class RevokePermissionCommandHandler
     : IRequestHandler<GrantPermissionCommand, Result<SuccessMessage>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IMemberRepository _memberRepository;
     private readonly IMemberPermissionRepository _memberPermissionRepository;
-    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IEventProvider _eventProvider;
 
-    public GrantPermissionCommandHandler(
+    public RevokePermissionCommandHandler(
         IUserRepository userRepository,
         IProjectRepository projectRepository,
         IMemberRepository memberRepository,
         IMemberPermissionRepository memberPermissionRepository,
-        IDateTimeProvider dateTimeProvider,
         IEventProvider eventProvider
     )
     {
@@ -32,7 +30,6 @@ public class GrantPermissionCommandHandler
         _projectRepository = projectRepository;
         _memberRepository = memberRepository;
         _memberPermissionRepository = memberPermissionRepository;
-        _dateTimeProvider = dateTimeProvider;
         _eventProvider = eventProvider;
     }
 
@@ -86,34 +83,23 @@ public class GrantPermissionCommandHandler
             request.Permission
         );
 
-        if (existingTargetPermission != null)
-            return PermissionErrors.PermissionAlreadyGranted with
-            {
-                Description = "Permission is already granted to target user"
-            };
+        if (existingTargetPermission is null || existingTargetPermission.IsDeleted)
+            return PermissionErrors.PermissionNotFound;
 
-        _memberPermissionRepository.Save(
-            new MemberPermission(
-                UserId: request.TargetUserId,
-                ProjectId: request.ProjectId,
-                Name: request.Name,
-                Description: request.Description,
-                Entity: request.Entity,
-                Permission: request.Permission,
-                IsDeleted: false,
-                DeletedAt: null,
-                CreatedAt: _dateTimeProvider.UtcNow
-            )
+        _memberPermissionRepository.Delete(
+            request.ProjectId,
+            request.TargetUserId,
+            request.Permission
         );
 
         await _eventProvider.Publish(
-            new PermissionGranted(
+            new PermissionRevoked(
                 ProjectId: request.ProjectId,
                 UserId: request.TargetUserId,
                 request.Permission
             )
         );
 
-        return new SuccessMessage("Permission granted successfully");
+        return new SuccessMessage("Permission revoked successfully");
     }
 }
