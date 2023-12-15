@@ -79,6 +79,9 @@ public static class DependencyInjection
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshRepository, RefreshRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<IMemberPermissionRepository, MemberPermissionRepository>();
     }
 
     private static void AddProviders(this IServiceCollection services, IConfiguration configuration)

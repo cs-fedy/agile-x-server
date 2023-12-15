@@ -23,7 +23,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result<Succes
         CancellationToken cancellationToken
     )
     {
-        _refreshRepository.DeleteRefresh(request.RefreshToken);
+        _refreshRepository.Delete(request.RefreshToken);
         await _cacheRepository.Remove($"token-list_{request.AccessToken}");
         return new SuccessMessage("Logged out successfully");
     }

@@ -9,15 +9,38 @@ public class UserRepository : IUserRepository
 
     public UserRepository(CustomDbContext dbContext) => _dbContext = dbContext;
 
-    public User? GetUserByEmail(string email) =>
-        _dbContext.Users.SingleOrDefault(user => user.Email == email && !user.IsDeleted);
+    public User? GetByEmail(string email) =>
+        _dbContext.Users.SingleOrDefault(user => user.Email == email);
 
-    public User? GetUserById(Guid userId) =>
-        _dbContext.Users.SingleOrDefault(user => user.UserId == userId && !user.IsDeleted);
-
-    public void SaveUser(User user)
+    public void Delete(Guid userId)
     {
-        _dbContext.Users.Add(user);
+        var existingUser = GetById(userId);
+        if (existingUser == null)
+            return;
+
+        existingUser = existingUser with
+        {
+            IsDeleted = true,
+            DeletedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
+        };
+
+        _dbContext.SaveChanges();
+    }
+
+    public User? GetById(Guid userId) =>
+        _dbContext.Users.SingleOrDefault(user => user.UserId == userId);
+
+    public User? GetByUsername(string username) =>
+        _dbContext.Users.SingleOrDefault(user => user.Username == username);
+
+    public void Save(User user)
+    {
+        var existingUser = GetById(user.UserId);
+        if (existingUser == null)
+            _dbContext.Users.Add(user);
+        else
+            existingUser = user with { };
         _dbContext.SaveChanges();
     }
 }

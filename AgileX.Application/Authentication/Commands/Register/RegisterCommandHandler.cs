@@ -31,7 +31,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
         CancellationToken cancellationToken
     )
     {
-        var existingUser = _userRepository.GetUserByEmail(request.Email);
+        var existingUser = _userRepository.GetByEmail(request.Email);
         if (existingUser != null)
             return UserErrors.UserAlreadyExist;
 
@@ -50,7 +50,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
                 createdAt
             );
 
-        _userRepository.SaveUser(createdUser);
+        _userRepository.Save(createdUser);
 
         await _eventProvider.Publish(new UserCreated(createdUser.UserId));
 

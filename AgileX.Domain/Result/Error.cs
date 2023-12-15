@@ -3,7 +3,7 @@
 public struct Error
 {
     public string Code { get; }
-    public string Description { get; }
+    public string Description { get; set; }
     public ErrorType Type { get; }
     public int StatusCode { get; }
 

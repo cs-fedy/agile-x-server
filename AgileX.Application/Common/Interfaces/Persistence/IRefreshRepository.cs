@@ -4,7 +4,7 @@ namespace AgileX.Application.Common.Interfaces.Persistence;
 
 public interface IRefreshRepository
 {
-    void SaveRefresh(Refresh refresh);
-    void DeleteRefresh(Guid refreshId);
-    Refresh? GetRefresh(Guid token);
+    void Save(Refresh refresh);
+    void Delete(Guid refreshId);
+    Refresh? Get(Guid token);
 }

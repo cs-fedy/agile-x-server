@@ -4,7 +4,9 @@ namespace AgileX.Application.Common.Interfaces.Persistence;
 
 public interface IUserRepository
 {
-    void SaveUser(User user);
-    User? GetUserById(Guid userId);
-    User? GetUserByEmail(string email);
+    void Save(User user);
+    User? GetById(Guid userId);
+    User? GetByEmail(string email);
+    User? GetByUsername(string username);
+    void Delete(Guid userId);
 }

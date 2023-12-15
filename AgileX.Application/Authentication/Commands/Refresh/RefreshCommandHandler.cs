@@ -39,14 +39,14 @@ public class RefreshCommandHandler : IRequestHandler<RefreshCommand, Result<Auth
         CancellationToken cancellationToken
     )
     {
-        var existingRefresh = _refreshRepository.GetRefresh(request.Token);
+        var existingRefresh = _refreshRepository.Get(request.Token);
         if (existingRefresh == null)
             return RefreshErrors.InvalidRefresh;
 
         if (existingRefresh.ExpiresIn > _dateTimeProvider.UtcNow)
             return RefreshErrors.InvalidRefresh;
 
-        var existingUser = _userRepository.GetUserById(existingRefresh.OwnerId);
+        var existingUser = _userRepository.GetById(existingRefresh.OwnerId);
         if (existingUser == null)
             return UserErrors.UserNotFound;
 
@@ -62,7 +62,7 @@ public class RefreshCommandHandler : IRequestHandler<RefreshCommand, Result<Auth
                 ExpiresIn: generatedRefreshToken.ExpiresIn
             );
 
-        _refreshRepository.SaveRefresh(refresh);
+        _refreshRepository.Save(refresh);
 
         return new AuthenticationResult(AccessToken: token, RefreshToken: generatedRefreshToken);
     }

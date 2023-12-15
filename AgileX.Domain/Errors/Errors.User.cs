@@ -13,4 +13,9 @@ public static class UserErrors
         code: "User.NotFound",
         description: "Requested user not found"
     );
+
+    public static Error UsernameTaken = Error.Conflict(
+        code: "User.UsernameTaken",
+        description: "Username already taken"
+    );
 }

@@ -35,8 +35,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<Authenti
         CancellationToken cancellationToken
     )
     {
-        var existingUser = _userRepository.GetUserByEmail(request.Email);
-        if (existingUser == null)
+        var existingUser = _userRepository.GetByEmail(request.Email);
+        if (existingUser is null || existingUser.IsDeleted)
             return UserErrors.UserNotFound;
 
         var token = _jwtTokenGenerator.GenerateToken(existingUser);
@@ -51,7 +51,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<Authenti
                 ExpiresIn: generatedRefreshToken.ExpiresIn
             );
 
-        _refreshRepository.SaveRefresh(refresh);
+        _refreshRepository.Save(refresh);
 
         return new AuthenticationResult(AccessToken: token, RefreshToken: generatedRefreshToken);
     }

@@ -24,4 +24,19 @@ public class RefreshRepository : IRefreshRepository
 
     public Refresh? GetRefresh(Guid token) =>
         _dbContext.Refreshes.SingleOrDefault(refresh => refresh.Token == token);
+
+    public void Save(Refresh refresh)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Delete(Guid refreshId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Refresh? Get(Guid token)
+    {
+        throw new NotImplementedException();
+    }
 }
