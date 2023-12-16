@@ -47,7 +47,7 @@ public class CreateProjectCommandHandler
                 ProjectId: projectId,
                 Name: request.Name,
                 Description: request.Description,
-                CompletionStatus: 0,
+                CompletionStatus: CompletionStatus.NOT_STARTED,
                 Progress: 0,
                 Priority: request.Priority,
                 Deadline: request.Deadline,

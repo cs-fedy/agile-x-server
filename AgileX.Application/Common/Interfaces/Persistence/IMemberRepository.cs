@@ -6,4 +6,5 @@ public interface IMemberRepository
 {
     void Save(Member member);
     Member? Get(Guid projectId, Guid userId);
+    List<Member> ListByProjectId(Guid projectId);
 }

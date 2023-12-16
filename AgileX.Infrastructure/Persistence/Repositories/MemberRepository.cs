@@ -14,4 +14,9 @@ public class MemberRepository : IMemberRepository
     {
         throw new NotImplementedException();
     }
+
+    public List<Member> ListByProjectId(Guid projectId)
+    {
+        throw new NotImplementedException();
+    }
 }
