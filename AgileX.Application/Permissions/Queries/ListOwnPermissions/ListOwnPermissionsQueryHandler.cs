@@ -40,6 +40,9 @@ public class ListOwnPermissionsQueryHandler
         if (existingMembership is null || existingMembership.IsDeleted)
             return MemberErrors.UnauthorizedMember;
 
-        return _memberPermissionRepository.ListByMemberId(request.ProjectId, request.UserId);
+        return _memberPermissionRepository
+            .ListByMemberId(request.ProjectId, request.UserId)
+            .Where(x => !x.IsDeleted)
+            .ToList();
     }
 }

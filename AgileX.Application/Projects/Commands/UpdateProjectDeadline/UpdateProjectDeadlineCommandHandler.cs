@@ -5,10 +5,10 @@ using AgileX.Domain.ObjectValues;
 using AgileX.Domain.Result;
 using MediatR;
 
-namespace AgileX.Application.Projects.Commands.UpdateProject;
+namespace AgileX.Application.Projects.Commands.UpdateProjectDeadline;
 
-public class UpdateProjectCommandHandler
-    : IRequestHandler<UpdateProjectCommand, Result<SuccessMessage>>
+public class UpdateProjectDeadlineCommandHandler
+    : IRequestHandler<UpdateProjectDeadlineCommand, Result<SuccessMessage>>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IMemberRepository _memberRepository;
@@ -16,7 +16,7 @@ public class UpdateProjectCommandHandler
     private readonly IEventProvider _eventProvider;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UpdateProjectCommandHandler(
+    public UpdateProjectDeadlineCommandHandler(
         IProjectRepository projectRepository,
         IMemberRepository memberRepository,
         IMemberPermissionRepository memberPermissionRepository,
@@ -32,7 +32,7 @@ public class UpdateProjectCommandHandler
     }
 
     public async Task<Result<SuccessMessage>> Handle(
-        UpdateProjectCommand request,
+        UpdateProjectDeadlineCommand request,
         CancellationToken cancellationToken
     )
     {
@@ -48,18 +48,17 @@ public class UpdateProjectCommandHandler
         var existingPermission = _memberPermissionRepository.Get(
             request.ProjectId,
             request.UserId,
-            Permission.UPDATE_PROJECT
+            Permission.UPDATE_PROJECT_DEADLINE
         );
 
         if (existingPermission is null || existingPermission.IsDeleted)
             return PermissionErrors.UnauthorizedAction;
 
+        // TODO: set the maximum date between the new date and the newest task to the deadline of the project
         _projectRepository.Save(
             existingProject with
             {
-                Name = request.Name ?? existingProject.Name,
-                Description = request.Description ?? existingProject.Description,
-                Priority = request.Priority ?? existingProject.Priority,
+                Deadline = request.NewDeadline,
                 UpdatedAt = _dateTimeProvider.UtcNow
             }
         );
