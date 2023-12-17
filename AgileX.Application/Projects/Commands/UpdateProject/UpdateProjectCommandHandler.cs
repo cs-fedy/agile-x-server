@@ -45,14 +45,17 @@ public class UpdateProjectCommandHandler
         if (existingMember is null || existingMember.IsDeleted)
             return MemberErrors.UnauthorizedMember;
 
-        var existingPermission = _memberPermissionRepository.Get(
-            request.ProjectId,
-            request.UserId,
-            Permission.UPDATE_PROJECT
-        );
+        if (existingMember.Membership == Membership.PROJECT_MEMBER)
+        {
+            var existingPermission = _memberPermissionRepository.Get(
+                request.ProjectId,
+                request.UserId,
+                Permission.UPDATE_PROJECT
+            );
 
-        if (existingPermission is null || existingPermission.IsDeleted)
-            return PermissionErrors.UnauthorizedAction;
+            if (existingPermission is null || existingPermission.IsDeleted)
+                return PermissionErrors.UnauthorizedAction;
+        }
 
         _projectRepository.Save(
             existingProject with

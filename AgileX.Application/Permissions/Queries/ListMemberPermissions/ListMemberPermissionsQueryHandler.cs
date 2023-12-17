@@ -39,14 +39,17 @@ public class ListMemberPermissionsQueryHandler
         if (existingMembership is null || existingMembership.IsDeleted)
             return MemberErrors.UnauthorizedMember;
 
-        var existingPermission = _memberPermissionRepository.Get(
-            request.ProjectId,
-            request.LoggedUserId,
-            Permission.LIST_MEMBER_PERMISSIONS
-        );
+        if (existingMembership.Membership == Membership.PROJECT_MEMBER)
+        {
+            var existingPermission = _memberPermissionRepository.Get(
+                request.ProjectId,
+                request.LoggedUserId,
+                Permission.LIST_MEMBER_PERMISSIONS
+            );
 
-        if (existingPermission is null || existingPermission.IsDeleted)
-            return PermissionErrors.UnauthorizedAction;
+            if (existingPermission is null || existingPermission.IsDeleted)
+                return PermissionErrors.UnauthorizedAction;
+        }
 
         return _memberPermissionRepository
             .ListByMemberId(request.ProjectId, request.TargetUserId)

@@ -55,17 +55,20 @@ public class AddMemberCommandHandler : IRequestHandler<AddMemberCommand, Result<
                 Description = "Logged user is not a member"
             };
 
-        var existingPermission = _memberPermissionRepository.Get(
-            request.ProjectId,
-            request.LoggedUserId,
-            Permission.ADD_MEMBER
-        );
+        if (existingLoggedMember.Membership == Membership.PROJECT_MEMBER)
+        {
+            var existingPermission = _memberPermissionRepository.Get(
+                request.ProjectId,
+                request.LoggedUserId,
+                Permission.ADD_MEMBER
+            );
 
-        if (existingPermission is null || existingPermission.IsDeleted)
-            return PermissionErrors.UnauthorizedAction with
-            {
-                Description = "Logged user is not authorized to perform this action"
-            };
+            if (existingPermission is null || existingPermission.IsDeleted)
+                return PermissionErrors.UnauthorizedAction with
+                {
+                    Description = "Logged user is not authorized to perform this action"
+                };
+        }
 
         var existingTargetMember = _memberRepository.Get(request.ProjectId, request.TargetUserId);
         if (existingTargetMember != null)

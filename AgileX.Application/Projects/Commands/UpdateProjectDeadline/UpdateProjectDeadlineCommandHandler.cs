@@ -45,14 +45,17 @@ public class UpdateProjectDeadlineCommandHandler
         if (existingMember is null || existingMember.IsDeleted)
             return MemberErrors.UnauthorizedMember;
 
-        var existingPermission = _memberPermissionRepository.Get(
-            request.ProjectId,
-            request.UserId,
-            Permission.UPDATE_PROJECT_DEADLINE
-        );
+        if (existingMember.Membership == Membership.PROJECT_MEMBER)
+        {
+            var existingPermission = _memberPermissionRepository.Get(
+                request.ProjectId,
+                request.UserId,
+                Permission.UPDATE_PROJECT_DEADLINE
+            );
 
-        if (existingPermission is null || existingPermission.IsDeleted)
-            return PermissionErrors.UnauthorizedAction;
+            if (existingPermission is null || existingPermission.IsDeleted)
+                return PermissionErrors.UnauthorizedAction;
+        }
 
         // TODO: set the maximum date between the new date and the newest task to the deadline of the project
         _projectRepository.Save(

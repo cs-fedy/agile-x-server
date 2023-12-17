@@ -57,17 +57,20 @@ public class GrantPermissionCommandHandler
                 Description = "Logged user is not a project member"
             };
 
-        var existingPermission = _memberPermissionRepository.Get(
-            request.ProjectId,
-            request.LoggedUserId,
-            Permission.GRANT_PERMISSION
-        );
+        if (existingMember.Membership == Membership.PROJECT_MEMBER)
+        {
+            var existingPermission = _memberPermissionRepository.Get(
+                request.ProjectId,
+                request.LoggedUserId,
+                Permission.GRANT_PERMISSION
+            );
 
-        if (existingPermission is null || existingPermission.IsDeleted)
-            return PermissionErrors.UnauthorizedAction with
-            {
-                Description = "Logged user is unauthorized to perform this action"
-            };
+            if (existingPermission is null || existingPermission.IsDeleted)
+                return PermissionErrors.UnauthorizedAction with
+                {
+                    Description = "Logged user is unauthorized to perform this action"
+                };
+        }
 
         var existingTargetUserMembership = _memberRepository.Get(
             request.ProjectId,
