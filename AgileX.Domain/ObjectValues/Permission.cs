@@ -10,5 +10,6 @@ public enum Permission
     ADD_MEMBER,
     CREATE_SPRINT,
     UPDATE_SPRINT,
-    DELETE_SPRINT
+    DELETE_SPRINT,
+    CREATE_TICKET
 }
