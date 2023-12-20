@@ -87,6 +87,7 @@ public class TicketDeadlineChangedHandler : INotificationHandler<TicketDeadlineC
         _sprintRepository.Save(
             existingSprint with
             {
+                EndDate = latestDeadline,
                 Duration = updatedDuration,
                 UpdatedAt = _dateTimeProvider.UtcNow
             }
