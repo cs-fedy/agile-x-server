@@ -10,6 +10,11 @@ public class TicketRepository : ITicketRepository
         throw new NotImplementedException();
     }
 
+    public void Delete(Guid ticketId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Ticket? GetById(Guid ticketId)
     {
         throw new NotImplementedException();

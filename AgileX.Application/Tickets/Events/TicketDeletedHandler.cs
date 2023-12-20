@@ -7,13 +7,13 @@ using MediatR;
 
 namespace AgileX.Application.Tickets.Events;
 
-public class TicketStatusChangedHandler : INotificationHandler<TicketCreated>
+public class TicketDeletedHandler : INotificationHandler<TicketDeleted>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly ITicketRepository _ticketRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public TicketStatusChangedHandler(
+    public TicketDeletedHandler(
         IProjectRepository projectRepository,
         ITicketRepository ticketRepository,
         IDateTimeProvider dateTimeProvider
@@ -24,14 +24,23 @@ public class TicketStatusChangedHandler : INotificationHandler<TicketCreated>
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public async Task Handle(TicketCreated notification, CancellationToken cancellationToken)
+    public async Task Handle(TicketDeleted notification, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         var existingTicket = _ticketRepository.GetById(notification.TicketId);
-        if (existingTicket is null || existingTicket.IsDeleted)
+        if (existingTicket is null)
             return;
 
-        var existingProject = _projectRepository.GetById(existingTicket.ProjectId);
+        await HandleProjectProgressChanges(existingTicket.ProjectId);
+
+        if (existingTicket.ParentTicketId is not null)
+            await HandleParentTicketCompletionStatus(existingTicket.ParentTicketId.Value);
+    }
+
+    private async Task HandleProjectProgressChanges(Guid projectId)
+    {
+        await Task.CompletedTask;
+        var existingProject = _projectRepository.GetById(projectId);
         if (existingProject is null || existingProject.IsDeleted)
             return;
 
@@ -54,9 +63,6 @@ public class TicketStatusChangedHandler : INotificationHandler<TicketCreated>
                 UpdatedAt = _dateTimeProvider.UtcNow
             }
         );
-
-        if (existingTicket.ParentTicketId is not null)
-            await HandleParentTicketCompletionStatus(existingTicket.ParentTicketId.Value);
     }
 
     private async Task HandleParentTicketCompletionStatus(Guid ticketId)
