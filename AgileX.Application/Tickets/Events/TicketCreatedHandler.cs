@@ -11,18 +11,24 @@ public class TicketCreatedHandler : INotificationHandler<TicketCreated>
     private readonly IProjectRepository _projectRepository;
     private readonly ITicketRepository _ticketRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IEventProvider _eventProvider;
     private readonly IEventBus _eventBus;
 
     public TicketCreatedHandler(
         IProjectRepository projectRepository,
         ITicketRepository ticketRepository,
         IUserRepository userRepository,
+        IDateTimeProvider dateTimeProvider,
+        IEventProvider eventProvider,
         IEventBus eventBus
     )
     {
         _projectRepository = projectRepository;
         _ticketRepository = ticketRepository;
         _userRepository = userRepository;
+        _dateTimeProvider = dateTimeProvider;
+        _eventProvider = eventProvider;
         _eventBus = eventBus;
     }
 
@@ -46,6 +52,17 @@ public class TicketCreatedHandler : INotificationHandler<TicketCreated>
         var existingUser = _userRepository.GetById(existingTicket.AssignedUserId.Value);
         if (existingUser is null || existingUser.IsDeleted)
             return;
+
+        _projectRepository.Save(
+            existingProject with
+            {
+                CompletionStatus = CompletionStatus.IN_PROGRESS,
+                UpdatedAt = _dateTimeProvider.UtcNow
+            }
+        );
+
+        if (existingTicket.SprintId is not null)
+            await _eventProvider.Publish(new NewSprintTicket(TicketId: existingTicket.TicketId));
 
         await _eventBus.Publish(
             new NewEmail(

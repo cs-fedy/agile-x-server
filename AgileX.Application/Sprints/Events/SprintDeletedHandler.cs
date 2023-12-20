@@ -1,16 +1,17 @@
 using AgileX.Application.Common.Interfaces.Persistence;
 using AgileX.Application.Common.Interfaces.Services;
+using AgileX.Domain.Events;
 using MediatR;
 
 namespace AgileX.Application.Sprints.Events;
 
-public class SprintDeleted : INotificationHandler<Domain.Events.SprintDeleted>
+public class SprintDeletedHandler : INotificationHandler<SprintDeleted>
 {
     private readonly ISprintRepository _sprintRepository;
     private readonly ITicketRepository _ticketRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public SprintDeleted(
+    public SprintDeletedHandler(
         ISprintRepository sprintRepository,
         ITicketRepository ticketRepository,
         IDateTimeProvider dateTimeProvider
@@ -21,10 +22,7 @@ public class SprintDeleted : INotificationHandler<Domain.Events.SprintDeleted>
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public async Task Handle(
-        Domain.Events.SprintDeleted notification,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(SprintDeleted notification, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         var existingSprint = _sprintRepository.GetById(notification.SprintId);

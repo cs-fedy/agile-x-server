@@ -1,19 +1,19 @@
 using AgileX.Application.Common.Interfaces.Persistence;
-using AgileX.Application.Tickets.Queries.ListSprintTickets;
+using AgileX.Application.Tickets.Queries.ListSubTickets;
 using AgileX.Domain.Entities;
 using AgileX.Domain.Errors;
 using AgileX.Domain.Result;
 using MediatR;
 
-namespace AgileX.Application.Tickets.Queries.ListSubTickets;
+namespace AgileX.Application.Tickets.Queries.GetTicket;
 
-public class ListSubTicketsQueryHandler : IRequestHandler<ListSubTicketsQuery, Result<List<Ticket>>>
+public class GetTicketQueryHandler : IRequestHandler<GetTicketQuery, Result<Ticket>>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly ITicketRepository _ticketRepository;
     private readonly IMemberRepository _memberRepository;
 
-    public ListSubTicketsQueryHandler(
+    public GetTicketQueryHandler(
         IProjectRepository projectRepository,
         ITicketRepository ticketRepository,
         IMemberRepository memberRepository
@@ -24,8 +24,8 @@ public class ListSubTicketsQueryHandler : IRequestHandler<ListSubTicketsQuery, R
         _memberRepository = memberRepository;
     }
 
-    public async Task<Result<List<Ticket>>> Handle(
-        ListSubTicketsQuery request,
+    public async Task<Result<Ticket>> Handle(
+        GetTicketQuery request,
         CancellationToken cancellationToken
     )
     {
@@ -42,9 +42,6 @@ public class ListSubTicketsQueryHandler : IRequestHandler<ListSubTicketsQuery, R
         if (existingMember is null || existingMember.IsDeleted)
             return MemberErrors.UnauthorizedMember;
 
-        return _ticketRepository
-            .ListByParentTicketId(request.TicketId)
-            .Where(x => !x.IsDeleted)
-            .ToList();
+        return existingTicket;
     }
 }
