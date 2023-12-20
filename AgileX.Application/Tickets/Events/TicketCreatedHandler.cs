@@ -61,6 +61,9 @@ public class TicketCreatedHandler : INotificationHandler<TicketCreated>
             }
         );
 
+        if (existingTicket.ParentTicketId is not null)
+            await HandleNewSubTicket(existingTicket.ParentTicketId.Value);
+
         if (existingTicket.SprintId is not null)
             await _eventProvider.Publish(new NewSprintTicket(TicketId: existingTicket.TicketId));
 
@@ -76,6 +79,22 @@ public class TicketCreatedHandler : INotificationHandler<TicketCreated>
                 )
             ),
             cancellationToken
+        );
+    }
+
+    private async Task HandleNewSubTicket(Guid parentTicket)
+    {
+        await Task.CompletedTask;
+        var existingTicket = _ticketRepository.GetById(parentTicket);
+        if (existingTicket is null || existingTicket.IsDeleted)
+            return;
+
+        _ticketRepository.Save(
+            existingTicket with
+            {
+                SubTicketsCount = existingTicket.SubTicketsCount + 1,
+                UpdatedAt = _dateTimeProvider.UtcNow
+            }
         );
     }
 }

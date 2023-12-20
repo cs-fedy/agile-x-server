@@ -38,18 +38,42 @@ public class TicketStatusChangedHandler : INotificationHandler<TicketCreated>
         var tickets = _ticketRepository.ListByProjectId(existingProject.ProjectId);
 
         var enumerable = tickets as Ticket[] ?? tickets.ToArray();
-        var completedTasksCount = enumerable.Count(x => x.Status == CompletionStatus.COMPLETED);
-        var startedTasksCount = enumerable.Count(x => x.Status == CompletionStatus.IN_PROGRESS);
+        var completedTicketsCount = enumerable.Count(x => x.Status == CompletionStatus.COMPLETED);
+        var startedTicketsCount = enumerable.Count(x => x.Status == CompletionStatus.IN_PROGRESS);
 
         _projectRepository.Save(
             existingProject with
             {
                 CompletionStatus =
-                    enumerable.Length == completedTasksCount
+                    enumerable.Length == completedTicketsCount
                         ? CompletionStatus.COMPLETED
-                        : startedTasksCount > 0
+                        : startedTicketsCount > 0
                             ? CompletionStatus.IN_PROGRESS
                             : CompletionStatus.NOT_STARTED,
+                UpdatedAt = _dateTimeProvider.UtcNow
+            }
+        );
+
+        if (existingTicket.ParentTicketId is not null)
+            await HandleParentTicketCompletionStatus(existingTicket.ParentTicketId.Value);
+    }
+
+    private async Task HandleParentTicketCompletionStatus(Guid ticketId)
+    {
+        await Task.CompletedTask;
+        var existingTicket = _ticketRepository.GetById(ticketId);
+        if (existingTicket is null || existingTicket.IsDeleted)
+            return;
+
+        var subTickets = _ticketRepository.ListByParentTicketId(ticketId);
+
+        var enumerable = subTickets as Ticket[] ?? subTickets.ToArray();
+        var completedTicketsCount = enumerable.Count(x => x.Status == CompletionStatus.COMPLETED);
+
+        _ticketRepository.Save(
+            existingTicket with
+            {
+                CompletedSubTicketsCount = completedTicketsCount,
                 UpdatedAt = _dateTimeProvider.UtcNow
             }
         );

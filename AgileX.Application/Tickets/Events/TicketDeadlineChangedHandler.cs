@@ -43,6 +43,12 @@ public class TicketDeadlineChangedHandler : INotificationHandler<TicketDeadlineC
                 existingTicket.SprintId.Value,
                 existingTicket.Deadline
             );
+
+        if (existingTicket.ParentTicketId is not null)
+            await HandleParentTicketDeadlineChanges(
+                existingTicket.ParentTicketId.Value,
+                existingTicket.Deadline
+            );
     }
 
     private async Task HandleProjectDeadlineChanges(Guid projectId, DateTime ticketDeadline)
@@ -82,6 +88,27 @@ public class TicketDeadlineChangedHandler : INotificationHandler<TicketDeadlineC
             existingSprint with
             {
                 Duration = updatedDuration,
+                UpdatedAt = _dateTimeProvider.UtcNow
+            }
+        );
+    }
+
+    private async Task HandleParentTicketDeadlineChanges(
+        Guid parentTicketId,
+        DateTime ticketDeadline
+    )
+    {
+        await Task.CompletedTask;
+        var existingTicket = _ticketRepository.GetById(parentTicketId);
+        if (existingTicket is null || existingTicket.IsDeleted)
+            return;
+
+        var deadlines = new List<DateTime>() { existingTicket.Deadline, ticketDeadline };
+
+        _ticketRepository.Save(
+            existingTicket with
+            {
+                Deadline = deadlines.Max(),
                 UpdatedAt = _dateTimeProvider.UtcNow
             }
         );
