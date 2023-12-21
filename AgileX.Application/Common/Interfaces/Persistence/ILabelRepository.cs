@@ -7,6 +7,6 @@ public interface ILabelRepository
     void Save(Label label);
     void Delete(Guid labelId);
     Label? GetById(Guid labelId);
-    List<Label> ListUnique();
+    List<Label> ListUnique(Guid projectId);
     List<Label> ListByTicketId(Guid ticketId);
 }

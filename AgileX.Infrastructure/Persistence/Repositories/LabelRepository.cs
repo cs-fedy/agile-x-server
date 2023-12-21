@@ -20,7 +20,7 @@ public class LabelRepository : ILabelRepository
         throw new NotImplementedException();
     }
 
-    public List<Label> ListUnique()
+    public List<Label> ListUnique(Guid projectId)
     {
         throw new NotImplementedException();
     }

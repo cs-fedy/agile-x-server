@@ -68,10 +68,11 @@ public class CreateLabelCommandHandler : IRequestHandler<CreateLabelCommand, Res
             new Label(
                 LabelId: Guid.NewGuid(),
                 TicketId: request.TicketId,
+                ProjectId: existingProject.ProjectId,
+                CreatedAt: _dateTimeProvider.UtcNow,
                 Content: request.Content,
                 IsDeleted: false,
-                DeletedAt: null,
-                CreatedAt: _dateTimeProvider.UtcNow
+                DeletedAt: null
             )
         );
 
