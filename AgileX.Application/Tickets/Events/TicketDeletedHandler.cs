@@ -44,7 +44,9 @@ public class TicketDeletedHandler : INotificationHandler<TicketDeleted>
         if (existingProject is null || existingProject.IsDeleted)
             return;
 
-        var tickets = _ticketRepository.ListByProjectId(existingProject.ProjectId);
+        var tickets = _ticketRepository
+            .ListByProjectId(existingProject.ProjectId)
+            .Where(x => !x.IsDeleted);
 
         var enumerable = tickets as Ticket[] ?? tickets.ToArray();
         var completedTicketsCount = enumerable.Count(x => x.Status == CompletionStatus.COMPLETED);
@@ -72,7 +74,7 @@ public class TicketDeletedHandler : INotificationHandler<TicketDeleted>
         if (existingTicket is null || existingTicket.IsDeleted)
             return;
 
-        var subTickets = _ticketRepository.ListByParentTicketId(ticketId);
+        var subTickets = _ticketRepository.ListByParentTicketId(ticketId).Where(x => !x.IsDeleted);
 
         var enumerable = subTickets as Ticket[] ?? subTickets.ToArray();
         var completedTicketsCount = enumerable.Count(x => x.Status == CompletionStatus.COMPLETED);

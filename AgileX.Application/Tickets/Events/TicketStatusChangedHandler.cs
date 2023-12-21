@@ -66,7 +66,7 @@ public class TicketStatusChangedHandler : INotificationHandler<TicketCreated>
         if (existingTicket is null || existingTicket.IsDeleted)
             return;
 
-        var subTickets = _ticketRepository.ListByParentTicketId(ticketId);
+        var subTickets = _ticketRepository.ListByParentTicketId(ticketId).Where(x => !x.IsDeleted);
 
         var enumerable = subTickets as Ticket[] ?? subTickets.ToArray();
         var completedTicketsCount = enumerable.Count(x => x.Status == CompletionStatus.COMPLETED);

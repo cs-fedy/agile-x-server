@@ -36,7 +36,10 @@ public class ProjectDeletedHandler : INotificationHandler<ProjectDeleted>
         if (existingUser is null || existingUser.IsDeleted)
             return;
 
-        var projectMembers = _memberRepository.ListByProjectId(notification.ProjectId);
+        var projectMembers = _memberRepository
+            .ListByProjectId(notification.ProjectId)
+            .Where(x => !x.IsDeleted);
+
         var members = projectMembers.Select(x => x.UserId.ToString()).ToList();
 
         await _eventBus.Publish(
