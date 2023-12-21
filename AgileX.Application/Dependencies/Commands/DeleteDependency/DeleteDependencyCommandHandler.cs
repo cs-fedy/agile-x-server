@@ -1,30 +1,26 @@
 using AgileX.Application.Common.Interfaces.Persistence;
-using AgileX.Application.Common.Interfaces.Services;
-using AgileX.Domain.Entities;
 using AgileX.Domain.Errors;
 using AgileX.Domain.ObjectValues;
 using AgileX.Domain.Result;
 using MediatR;
 
-namespace AgileX.Application.Dependencies.Commands.AddDependency;
+namespace AgileX.Application.Dependencies.Commands.DeleteDependency;
 
-public class AddDependencyCommandHandler
-    : IRequestHandler<AddDependencyCommand, Result<SuccessMessage>>
+public class DeleteDependencyCommandHandler
+    : IRequestHandler<DeleteDependencyCommand, Result<SuccessMessage>>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IMemberRepository _memberRepository;
     private readonly IMemberPermissionRepository _memberPermissionRepository;
     private readonly ITicketRepository _ticketRepository;
     private readonly IDependencyRepository _dependencyRepository;
-    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public AddDependencyCommandHandler(
+    public DeleteDependencyCommandHandler(
         IProjectRepository projectRepository,
         IMemberRepository memberRepository,
         IMemberPermissionRepository memberPermissionRepository,
         ITicketRepository ticketRepository,
-        IDependencyRepository dependencyRepository,
-        IDateTimeProvider dateTimeProvider
+        IDependencyRepository dependencyRepository
     )
     {
         _projectRepository = projectRepository;
@@ -32,11 +28,10 @@ public class AddDependencyCommandHandler
         _memberPermissionRepository = memberPermissionRepository;
         _ticketRepository = ticketRepository;
         _dependencyRepository = dependencyRepository;
-        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<Result<SuccessMessage>> Handle(
-        AddDependencyCommand request,
+        DeleteDependencyCommand request,
         CancellationToken cancellationToken
     )
     {
@@ -58,14 +53,14 @@ public class AddDependencyCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.ADD_DEPENDENCY
+                Permission.DELETE_DEPENDENCY
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)
                 return PermissionErrors.UnauthorizedAction;
         }
 
-        if (existingTicket.Status == CompletionStatus.COMPLETED)
+        if (existingTicket.Status is CompletionStatus.COMPLETED or CompletionStatus.IN_PROGRESS)
             return DependencyErrors.TicketInProgressOrCompleted;
 
         var existingDependencyTicket = _ticketRepository.GetById(request.DependencyTicketId);
@@ -83,19 +78,10 @@ public class AddDependencyCommandHandler
             request.DependencyTicketId
         );
 
-        if (existingDependency is not null)
-            return DependencyErrors.DependencyAlreadyExist;
+        if (existingDependency is null || existingDependency.IsDeleted)
+            return DependencyErrors.DependencyNotFound;
 
-        _dependencyRepository.Save(
-            new Dependency(
-                TicketId: request.TicketId,
-                DependencyTicketId: request.DependencyTicketId,
-                CreatedAt: _dateTimeProvider.UtcNow,
-                IsDeleted: false,
-                DeletedAt: null
-            )
-        );
-
-        return new SuccessMessage("Dependency added successfully");
+        _dependencyRepository.Delete(request.TicketId, request.DependencyTicketId);
+        return new SuccessMessage("Dependency deleted successfully");
     }
 }

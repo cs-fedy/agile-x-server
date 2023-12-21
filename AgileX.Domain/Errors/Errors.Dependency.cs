@@ -14,8 +14,8 @@ public static class DependencyErrors
         description: "Requested dependency already exist"
     );
 
-    public static Error TicketCompleted = Error.Validation(
-        code: "Dependency.TicketCompleted",
-        description: "Ticket is completed. Can't add new dependency."
+    public static Error TicketInProgressOrCompleted = Error.Validation(
+        code: "Dependency.InProgressOrCompleted",
+        description: "Ticket is in progress or completed. Can't add new dependency."
     );
 }
