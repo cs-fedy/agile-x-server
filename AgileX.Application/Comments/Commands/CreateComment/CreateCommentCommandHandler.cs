@@ -55,7 +55,7 @@ public class CreateCommentCommandHandler
         if (request.ParentCommentId is not null)
         {
             var existingComment = _commentRepository.GetById(request.ParentCommentId.Value);
-            if (existingComment is null || existingComment.IsDelete)
+            if (existingComment is null || existingComment.IsDeleted)
                 return CommentErrors.CommentNotFound;
         }
 
@@ -71,7 +71,7 @@ public class CreateCommentCommandHandler
                 Text: request.Text,
                 AttachedCode: request.AttachedCode,
                 SubCommentsCount: 0,
-                IsDelete: false,
+                IsDeleted: false,
                 DeletedAt: null,
                 CreatedAt: creationDate,
                 UpdatedAt: creationDate

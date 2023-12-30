@@ -64,7 +64,7 @@ public class CreateTicketCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.UserId,
-                Permission.CREATE_TICKET
+                Permission.CreateTicket
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

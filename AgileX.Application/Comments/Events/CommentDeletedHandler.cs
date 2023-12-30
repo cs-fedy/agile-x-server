@@ -38,7 +38,7 @@ public class CommentDeletedHandler : INotificationHandler<CommentDeleted>
             var existingParentComment = _commentRepository.GetById(
                 existingComment.ParentCommentId.Value
             );
-            if (existingParentComment is not null && !existingParentComment.IsDelete)
+            if (existingParentComment is not null && !existingParentComment.IsDeleted)
             {
                 _commentRepository.Save(
                     existingParentComment with

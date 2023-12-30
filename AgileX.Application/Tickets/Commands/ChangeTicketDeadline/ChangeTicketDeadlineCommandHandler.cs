@@ -58,7 +58,7 @@ public class ChangeTicketDeadlineCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.CHANGE_TICKET_DEADLINE
+                Permission.ChangeTicketDeadline
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

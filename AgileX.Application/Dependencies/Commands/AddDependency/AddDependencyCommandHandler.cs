@@ -58,7 +58,7 @@ public class AddDependencyCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.ADD_DEPENDENCY
+                Permission.AddDependency
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

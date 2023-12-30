@@ -57,7 +57,7 @@ public class CreateLabelCommandHandler : IRequestHandler<CreateLabelCommand, Res
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.CREATE_LABEL
+                Permission.CreateLabel
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

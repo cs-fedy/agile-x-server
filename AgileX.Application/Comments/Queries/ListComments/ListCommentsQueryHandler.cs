@@ -46,7 +46,7 @@ public class ListCommentsQueryHandler : IRequestHandler<ListCommentsQuery, Resul
 
         return _commentRepository
             .ListByTicketId(request.TicketId)
-            .Where(x => x is { IsDelete: false, ParentCommentId: null })
+            .Where(x => x is { IsDeleted: false, ParentCommentId: null })
             .ToList();
     }
 }

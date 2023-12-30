@@ -26,7 +26,7 @@ public class CommentCreatedHandler : INotificationHandler<CommentCreated>
     {
         await Task.CompletedTask;
         var existingComment = _commentRepository.GetById(notification.CommentId);
-        if (existingComment is null || existingComment.IsDelete)
+        if (existingComment is null || existingComment.IsDeleted)
             return;
 
         var existingTicket = _ticketRepository.GetById(existingComment.TicketId);
@@ -38,7 +38,7 @@ public class CommentCreatedHandler : INotificationHandler<CommentCreated>
             var existingParentComment = _commentRepository.GetById(
                 existingComment.ParentCommentId.Value
             );
-            if (existingParentComment is not null && !existingParentComment.IsDelete)
+            if (existingParentComment is not null && !existingParentComment.IsDeleted)
             {
                 _commentRepository.Save(
                     existingParentComment with

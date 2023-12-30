@@ -63,7 +63,7 @@ public class ChangeTicketSprintCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.CHANGE_TICKET_SPRINT
+                Permission.ChangeTicketSprint
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

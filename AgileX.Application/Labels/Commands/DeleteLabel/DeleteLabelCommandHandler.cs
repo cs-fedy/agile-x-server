@@ -52,7 +52,7 @@ public class DeleteLabelCommandHandler : IRequestHandler<DeleteLabelCommand, Res
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.DELETE_LABEL
+                Permission.DeleteLabel
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

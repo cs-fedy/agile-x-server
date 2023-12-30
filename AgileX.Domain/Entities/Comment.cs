@@ -8,7 +8,7 @@ public record Comment(
     string Text,
     string? AttachedCode,
     int SubCommentsCount,
-    bool IsDelete,
+    bool IsDeleted,
     DateTime? DeletedAt,
     DateTime CreatedAt,
     DateTime UpdatedAt

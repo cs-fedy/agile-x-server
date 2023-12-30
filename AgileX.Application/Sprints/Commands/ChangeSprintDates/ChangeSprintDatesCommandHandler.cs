@@ -57,7 +57,7 @@ public class ChangeSprintDatesCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.CHANGE_SPRINT_DATES
+                Permission.ChangeSprintDates
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

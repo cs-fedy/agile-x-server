@@ -50,7 +50,7 @@ public class UpdateProjectDeadlineCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.UserId,
-                Permission.UPDATE_PROJECT_DEADLINE
+                Permission.UpdateProjectDeadline
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

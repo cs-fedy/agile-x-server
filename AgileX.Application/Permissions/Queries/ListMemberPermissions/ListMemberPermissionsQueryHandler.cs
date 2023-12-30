@@ -44,7 +44,7 @@ public class ListMemberPermissionsQueryHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.LoggedUserId,
-                Permission.LIST_MEMBER_PERMISSIONS
+                Permission.ListMemberPermissions
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

@@ -54,7 +54,7 @@ public class UpdateSprintCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.UPDATE_SPRINT
+                Permission.UpdateSprint
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

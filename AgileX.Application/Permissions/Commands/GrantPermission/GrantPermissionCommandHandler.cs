@@ -62,7 +62,7 @@ public class GrantPermissionCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.LoggedUserId,
-                Permission.GRANT_PERMISSION
+                Permission.GrantPermission
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

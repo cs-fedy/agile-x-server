@@ -50,7 +50,7 @@ public class UpdateProjectCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.UserId,
-                Permission.UPDATE_PROJECT
+                Permission.UpdateProject
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

@@ -34,7 +34,6 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
             .HasColumnName("is_confirmed");
 
         builder.Property(user => user.IsDeleted).HasDefaultValue(false).HasColumnName("is_deleted");
-
         builder.Property(user => user.CreatedAt).IsRequired().HasColumnName("created_at");
         builder.Property(user => user.UpdatedAt).IsRequired().HasColumnName("updated_at");
         builder.Property(user => user.DeletedAt).HasColumnName("deleted_at");

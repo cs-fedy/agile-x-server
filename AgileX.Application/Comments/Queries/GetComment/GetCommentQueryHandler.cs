@@ -33,7 +33,7 @@ public class GetCommentQueryHandler : IRequestHandler<GetCommentQuery, Result<Co
     {
         await Task.CompletedTask;
         var existingComment = _commentRepository.GetById(request.CommentId);
-        if (existingComment is null || existingComment.IsDelete)
+        if (existingComment is null || existingComment.IsDeleted)
             return CommentErrors.CommentNotFound;
 
         var existingTicket = _ticketRepository.GetById(existingComment.TicketId);

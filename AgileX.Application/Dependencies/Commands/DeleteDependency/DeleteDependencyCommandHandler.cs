@@ -53,7 +53,7 @@ public class DeleteDependencyCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.DELETE_DEPENDENCY
+                Permission.DeleteDependency
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

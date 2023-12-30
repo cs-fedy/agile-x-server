@@ -47,7 +47,7 @@ public class DeleteProjectCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.UserId,
-                Permission.DELETE_PROJECT
+                Permission.DeleteProject
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

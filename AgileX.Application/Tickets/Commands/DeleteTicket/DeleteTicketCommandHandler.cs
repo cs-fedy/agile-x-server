@@ -55,7 +55,7 @@ public class DeleteTicketCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 existingProject.ProjectId,
                 request.UserId,
-                Permission.DELETE_TICKET
+                Permission.DeleteTicket
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

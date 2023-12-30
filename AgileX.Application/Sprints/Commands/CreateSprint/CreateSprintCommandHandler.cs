@@ -51,7 +51,7 @@ public class CreateSprintCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.UserId,
-                Permission.CREATE_SPRINT
+                Permission.CreateSprint
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)

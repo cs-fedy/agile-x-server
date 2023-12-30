@@ -61,7 +61,7 @@ public class RemoveMemberCommandHandler
             var existingPermission = _memberPermissionRepository.Get(
                 request.ProjectId,
                 request.LoggedUserId,
-                Permission.ADD_MEMBER
+                Permission.AddMember
             );
 
             if (existingPermission is null || existingPermission.IsDeleted)
