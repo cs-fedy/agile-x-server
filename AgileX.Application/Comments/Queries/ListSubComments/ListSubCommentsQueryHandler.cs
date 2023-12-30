@@ -1,0 +1,53 @@
+using AgileX.Application.Comments.Queries.ListComments;
+using AgileX.Application.Common.Interfaces.Persistence;
+using AgileX.Domain.Entities;
+using AgileX.Domain.Errors;
+using AgileX.Domain.Result;
+using MediatR;
+
+namespace AgileX.Application.Comments.Queries.ListSubComments;
+
+public class ListSubCommentsQueryHandler : IRequestHandler<ListCommentsQuery, Result<List<Comment>>>
+{
+    private readonly ICommentRepository _commentRepository;
+    private readonly IProjectRepository _projectRepository;
+    private readonly IMemberRepository _memberRepository;
+    private readonly ITicketRepository _ticketRepository;
+
+    public ListSubCommentsQueryHandler(
+        ICommentRepository commentRepository,
+        IProjectRepository projectRepository,
+        IMemberRepository memberRepository,
+        ITicketRepository ticketRepository
+    )
+    {
+        _commentRepository = commentRepository;
+        _projectRepository = projectRepository;
+        _memberRepository = memberRepository;
+        _ticketRepository = ticketRepository;
+    }
+
+    public async Task<Result<List<Comment>>> Handle(
+        ListCommentsQuery request,
+        CancellationToken cancellationToken
+    )
+    {
+        await Task.CompletedTask;
+        var existingTicket = _ticketRepository.GetById(request.TicketId);
+        if (existingTicket is null || existingTicket.IsDeleted)
+            return TicketErrors.TicketNotFound;
+
+        var existingProject = _projectRepository.GetById(existingTicket.ProjectId);
+        if (existingProject is null || existingProject.IsDeleted)
+            return ProjectErrors.ProjectNotFound;
+
+        var existingMember = _memberRepository.Get(existingProject.ProjectId, request.UserId);
+        if (existingMember is null || existingMember.IsDeleted)
+            return MemberErrors.UnauthorizedMember;
+
+        return _commentRepository
+            .ListByParentCommentId(request.TicketId)
+            .Where(x => !x.IsDelete)
+            .ToList();
+    }
+}

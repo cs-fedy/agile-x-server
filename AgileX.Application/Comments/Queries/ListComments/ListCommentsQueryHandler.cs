@@ -4,50 +4,49 @@ using AgileX.Domain.Errors;
 using AgileX.Domain.Result;
 using MediatR;
 
-namespace AgileX.Application.Tickets.Queries.ListSprintTickets;
+namespace AgileX.Application.Comments.Queries.ListComments;
 
-public class ListSprintTicketsQueryHandler
-    : IRequestHandler<ListSprintTicketsQuery, Result<List<Ticket>>>
+public class ListCommentsQueryHandler : IRequestHandler<ListCommentsQuery, Result<List<Comment>>>
 {
+    private readonly ICommentRepository _commentRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IMemberRepository _memberRepository;
-    private readonly ISprintRepository _sprintRepository;
     private readonly ITicketRepository _ticketRepository;
 
-    public ListSprintTicketsQueryHandler(
+    public ListCommentsQueryHandler(
+        ICommentRepository commentRepository,
         IProjectRepository projectRepository,
         IMemberRepository memberRepository,
-        ISprintRepository sprintRepository,
         ITicketRepository ticketRepository
     )
     {
+        _commentRepository = commentRepository;
         _projectRepository = projectRepository;
         _memberRepository = memberRepository;
-        _sprintRepository = sprintRepository;
         _ticketRepository = ticketRepository;
     }
 
-    public async Task<Result<List<Ticket>>> Handle(
-        ListSprintTicketsQuery request,
+    public async Task<Result<List<Comment>>> Handle(
+        ListCommentsQuery request,
         CancellationToken cancellationToken
     )
     {
         await Task.CompletedTask;
-        var existingSprint = _sprintRepository.GetById(request.SprintId);
-        if (existingSprint is null || existingSprint.IsDeleted)
-            return SprintErrors.SprintNotFound;
+        var existingTicket = _ticketRepository.GetById(request.TicketId);
+        if (existingTicket is null || existingTicket.IsDeleted)
+            return TicketErrors.TicketNotFound;
 
-        var existingProject = _projectRepository.GetById(existingSprint.ProjectId);
+        var existingProject = _projectRepository.GetById(existingTicket.ProjectId);
         if (existingProject is null || existingProject.IsDeleted)
             return ProjectErrors.ProjectNotFound;
 
-        var existingMember = _memberRepository.Get(existingSprint.ProjectId, request.UserId);
+        var existingMember = _memberRepository.Get(existingProject.ProjectId, request.UserId);
         if (existingMember is null || existingMember.IsDeleted)
             return MemberErrors.UnauthorizedMember;
 
-        return _ticketRepository
-            .ListBySprintId(request.SprintId)
-            .Where(x => x is { IsDeleted: false, ParentTicketId: null })
+        return _commentRepository
+            .ListByTicketId(request.TicketId)
+            .Where(x => x is { IsDelete: false, ParentCommentId: null })
             .ToList();
     }
 }

@@ -40,7 +40,7 @@ public class ListProjectTicketsQueryHandler
 
         return _ticketRepository
             .ListByProjectId(request.ProjectId)
-            .Where(x => !x.IsDeleted)
+            .Where(x => x is { IsDeleted: false, ParentTicketId: null })
             .ToList();
     }
 }
