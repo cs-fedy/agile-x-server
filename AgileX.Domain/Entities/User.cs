@@ -11,7 +11,7 @@ public record User(
     Role Role,
     DateTime CreatedAt,
     DateTime UpdatedAt,
-    bool IsConfirmed = false,
-    bool IsDeleted = false,
-    DateTime? DeletedAt = null
+    bool IsConfirmed,
+    bool IsDeleted,
+    DateTime? DeletedAt
 );

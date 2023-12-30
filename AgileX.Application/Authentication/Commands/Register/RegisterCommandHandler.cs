@@ -35,24 +35,27 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Su
         if (existingUser != null)
             return UserErrors.UserAlreadyExist;
 
+        var userId = Guid.NewGuid();
         var hashedPassword = _passwordProvider.hash(request.Password);
         var createdAt = DateTime.UtcNow;
 
-        User createdUser =
-            new(
-                Guid.NewGuid(),
-                request.Email,
-                hashedPassword,
-                request.FullName,
-                request.Username,
-                Role.USER,
-                createdAt,
-                createdAt
-            );
+        _userRepository.Save(
+            new User(
+                UserId: userId,
+                Email: request.Email,
+                Password: hashedPassword,
+                FullName: request.FullName,
+                Username: request.Username,
+                Role: Role.USER,
+                CreatedAt: createdAt,
+                UpdatedAt: createdAt,
+                IsDeleted: false,
+                DeletedAt: null,
+                IsConfirmed: false
+            )
+        );
 
-        _userRepository.Save(createdUser);
-
-        await _eventProvider.Publish(new UserCreated(createdUser.UserId));
+        await _eventProvider.Publish(new UserCreated(userId));
 
         return new SuccessMessage("user created successfully");
     }

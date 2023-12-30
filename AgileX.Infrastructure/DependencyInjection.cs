@@ -85,6 +85,9 @@ public static class DependencyInjection
         services.AddScoped<ISprintRepository, SprintRepository>();
         services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+        services.AddScoped<IDependencyRepository, DependencyRepository>();
+        services.AddScoped<ILabelRepository, LabelRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
     }
 
     private static void AddProviders(this IServiceCollection services, IConfiguration configuration)
